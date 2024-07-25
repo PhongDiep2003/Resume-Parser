@@ -1,8 +1,8 @@
-# React + Vite
+# Resume Parser
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Introduction
+Our resume parser application streamlines the recruitment process for HR departments by filtering through large volumes of resumes to identify the best matches based on specified keywords. The application analyzes each resume, extracts relevant information, and compares with the specified keywords. The results are then presented in a PDF format, with all the matching keywords prominently highlighted, making it easier for HR professionals to identify the most suitable candidates quickly and efficiently.
 
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Technologies used
+- **Web Client:** React, HTML, CSS, JavaScript
+- **Backend:** Python, spacy, pdf-lib, pymupdf, FastAPI
