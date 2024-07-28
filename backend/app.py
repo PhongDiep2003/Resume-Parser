@@ -1,10 +1,10 @@
 import spacy
 import fitz
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, UploadFile, Depends, File, Query, Form
+from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.responses import FileResponse 
 from pydantic import BaseModel
-from typing import List, Annotated
+from typing import List
 from fastapi.middleware.cors import CORSMiddleware
 import json
 from io import BytesIO
@@ -44,10 +44,6 @@ app.add_middleware(
     allow_methods=["*"],  # Allow all methods (GET, POST, etc.)
     allow_headers=["*"],  # Allow all headers
 )
-
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
 
 @app.post("/extract_skills")
 async def extract_skills(skills:List[str] = Form(...) ,file: UploadFile=File(...)):
