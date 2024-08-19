@@ -7,6 +7,7 @@ function App() {
   const [mockFiles, setMockFiles] = useState([])
   const [preview, setPreview] = useState(null)
   const [matchingRes, setMatchingRes] = useState(null)
+  const [isLoading, setIsLoading] = useState(false)
   const scrollKeywordRef = useRef(null);
   const scrollResumeRef = useRef(null);
 
@@ -24,6 +25,7 @@ useEffect(() => {
   }
 }, [files, mockFiles]);
   const handleUpload = async() => {
+    setIsLoading(true)
     let highest_matching_score = 0
     let index_of_highest_matching_file = -1
     let res = {}
@@ -50,7 +52,7 @@ useEffect(() => {
         const data = await handleHighlightingSkills(file)
         if (data.success) {
           // If request is handled successfully, the new modified file should have been saved at the tmp folder
-          const response = await fetch('http://127.0.0.1:8000/get_file/' + data.filename)
+          const response = await fetch('https://resume-parser-backend-hopicsafcq-uc.a.run.app/get_file/' + data.filename)
           const blob = await response.blob()
           const objectURL = URL.createObjectURL(blob)
           setPreview(objectURL)
@@ -59,7 +61,7 @@ useEffect(() => {
       }
 
     }
-    
+    setIsLoading(false)
   }
 
   const handleHighlightingSkills = async (file) => {
@@ -69,7 +71,7 @@ useEffect(() => {
       keywords.forEach((keyword) => {
         formData.append('skills', keyword);
       })
-      const response = await fetch('http://127.0.0.1:8000/highlight_skills', {
+      const response = await fetch('https://resume-parser-backend-hopicsafcq-uc.a.run.app/highlight_skills', {
         method: 'POST',
         body: formData
       })
@@ -90,7 +92,7 @@ useEffect(() => {
       keywords.forEach((keyword) => {
         formData.append('skills', keyword);  // appending each skill
       });
-      const response = await fetch('http://127.0.0.1:8000/extract_skills', {
+      const response = await fetch('https://resume-parser-backend-hopicsafcq-uc.a.run.app/extract_skills', {
         method: 'POST',
         body: formData
       })
@@ -118,7 +120,7 @@ const parse_resume = () =>  (
               {/* enter keyword for resume parsing */}
               <h3>Enter Keyword</h3>
               <div className="input_container">
-                <input type="text" required="required" maxLength={20} onChange={e => setKeyword(e.target.value)} value={keyword} onKeyDown={(e) => {
+                <input type="text" required="required" maxLength={20} onChange={e => setKeyword(e.target.value)} value={keyword} disabled={isLoading} onKeyDown={(e) => {
                   if (e.key === 'Enter' && keyword !== '') {
                     if (!keywords.includes(keyword.toUpperCase())) {
                       setKeywords(prev => [...prev, keyword.toUpperCase()])
@@ -128,7 +130,7 @@ const parse_resume = () =>  (
                 }}/>
                 <label>Keyword</label>
                 <i></i>
-                <button className='clearBtn' onClick={() => setKeywords([])}>Clear</button>
+                <button className='clearBtn' disabled={isLoading} onClick={() => setKeywords([])}>Clear</button>
               </div>
               {/* display keyword */}
               <div className='keywords_container' ref={scrollKeywordRef}>
@@ -160,7 +162,7 @@ const parse_resume = () =>  (
             <div className='grid_item'>
               {/* upload resume */}
               <h3>Upload Resume</h3>
-              <input id='file' type='file' accept='.pdf' onChange={(e) => {
+              <input id='file' type='file' accept='.pdf' disabled={isLoading} onChange={(e) => {
                 if (e.target.files[0]) {
                   if (!mockFiles.includes(e.target.files[0].name)) {
                     setMockFiles(prev => [...prev, e.target.files[0].name])
@@ -172,7 +174,7 @@ const parse_resume = () =>  (
               <label htmlFor="file" className='labelStyle'>
                 Select Files
               </label>
-              <button className='clearBtn' onClick={() => {
+              <button className='clearBtn' disabled={isLoading} onClick={() => {
                 setFiles([])
                 setMockFiles([])
               }}>Clear</button>
@@ -207,7 +209,7 @@ const parse_resume = () =>  (
             </div>
           </div>
           <div className='uploadBtn'> 
-            <button onClick={handleUpload}>Upload</button>
+            <button onClick={handleUpload} disabled={isLoading}>Upload</button>
           </div>
           </div>
       )
@@ -227,8 +229,10 @@ const show_result = () => (
 )
 
 const go_back = async () => {
-  const response = await fetch('http://127.0.0.1:8000/delete_dir')
+  setIsLoading(true)
+  const response = await fetch('https://resume-parser-backend-hopicsafcq-uc.a.run.app/delete_dir')
   const data = await response.json()
+  console.log(data)
   if (!data.success) {
     alert('Error in deleting files. Please try again later.')
   }
@@ -238,6 +242,7 @@ const go_back = async () => {
   setFiles([])
   setMockFiles([])
   setKeyword('')
+  setIsLoading(false)
 }
 
 
